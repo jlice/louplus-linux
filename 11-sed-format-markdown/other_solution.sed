@@ -1,4 +1,5 @@
 #!/bin/sed -f
 
 /^$/{N;/\n$/D}
-s/^\n\[/\n\!\[/
+s/\[picture\-\S*\]\(\S*\.png\S*\)/\!&/g
+s/\[picture\-\S*\]\(\S*\.jpg\S*\)/\!&/g
