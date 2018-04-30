@@ -25,9 +25,9 @@ judgment(){
     threshold=$2
     used=$(echo $3 | tr -d '%')
     if expr $used \< $threshold > /dev/null 2>&1 ;then
-        printf '%s \t %s \n' "$vtype:" "is OK,use: $3"
+        printf '%s %s OK\n' $vtype $3
     else
-        printf '%s \t %s \n' "$vtype:" "need notice,use: $3"
+        printf '%s %s Alert\n' $vtype $3
     fi
 }
 
