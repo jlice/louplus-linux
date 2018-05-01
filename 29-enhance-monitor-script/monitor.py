@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import re
 import sys
 import glob
 
@@ -51,24 +52,18 @@ def convert_ip_port(ip_port):
     return ip, port
 
 
-def get_pid(inode):
-    for path in glob.glob('/proc/[1-9]*/fd/[1-9]*'):
-        try:
-            if str(inode) in os.readlink(path):
-                return path.split('/')[2]
-            else:
-                continue
-        except:
-            pass
-    return None
-
-
 def main(choose):
     content = get_content(choose)
-
-    for info in content:
-        iterms = info.split(' ')
-        iterms_list = [x for x in iterms if x != '']
+    info_list = [info.split() for info in content]
+    pids = {iterms_list[9]: None for iterms_list in info_list}
+    for path in glob.glob('/proc/[1-9]*/fd/[1-9]*'):
+        try:
+            match = re.findall('(socket|pipe):\[(\d+)\]', os.readlink(path))
+            if match and match[0][1] in pids:
+                pids[match[0][1]] = int(path.split('/')[2])
+        except:
+            pass
+    for iterms_list in info_list:
         proto = choose
         local_address = "%s:%s" % convert_ip_port(iterms_list[1])
         status = STATUS[iterms_list[3]]
@@ -76,7 +71,7 @@ def main(choose):
             remote_address = '-'
         else:
             remote_address = "%s:%s" % convert_ip_port(iterms_list[2])
-        pid = get_pid(iterms_list[9])
+        pid = pids[iterms_list[9]]
         program_name = ''
         if pid:
             program_name = get_program_name(pid)
