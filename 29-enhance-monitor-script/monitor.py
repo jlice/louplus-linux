@@ -56,7 +56,7 @@ def main(choose):
     content = get_content(choose)
     info_list = [info.split() for info in content]
     pids = {iterms_list[9]: None for iterms_list in info_list}
-    for path in glob.glob('/proc/[1-9]*/fd/[1-9]*'):
+    for path in glob.glob('/proc/[0-9]*/fd/[0-9]*'):
         try:
             match = re.findall('(socket|pipe):\[(\d+)\]', os.readlink(path))
             if match and match[0][1] in pids:
